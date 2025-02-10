@@ -11,8 +11,7 @@ Docker Sail with MSSQL
 Go to the directory docker/8.4 and open Dockerfile
 remove the code and add
 
-`
-FROM ubuntu:24.04
+`FROM ubuntu:24.04
 
 LABEL maintainer="Taylor Otwell"
 
@@ -32,7 +31,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN echo "Acquire::http::Pipeline-Depth 0;" > /etc/apt/apt.conf.d/99custom && \
     echo "Acquire::http::No-Cache true;" >> /etc/apt/apt.conf.d/99custom && \
-    echo "Acquire::BrokenProxy    true;" >> /etc/apt/apt.conf.d/99custom
+    echo "Acquire::BrokenProxy true;" >> /etc/apt/apt.conf.d/99custom
 
 RUN apt-get update && apt-get upgrade -y \
     && mkdir -p /etc/apt/keyrings \
@@ -54,21 +53,23 @@ RUN apt-get update && apt-get upgrade -y \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_VERSION.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
     && apt-get install -y nodejs \
-    && npm install -g npm \
-    && npm install -g pnpm \
-    && npm install -g bun \
+    && npm install -g npm pnpm bun \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /etc/apt/keyrings/yarn.gpg >/dev/null \
     && echo "deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
     && curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/keyrings/pgdg.gpg >/dev/null \
     && echo "deb [signed-by=/etc/apt/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
     && apt-get update \
-    && apt-get install -y yarn \
-    && apt-get install -y $MYSQL_CLIENT \
-    && apt-get install -y postgresql-client-$POSTGRES_VERSION \
+    && apt-get install -y yarn $MYSQL_CLIENT postgresql-client-$POSTGRES_VERSION \
     && apt-get -y autoremove \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && pecl install sqlsrv pdo_sqlsrv \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Install ODBC dependencies for SQL Server
+RUN apt-get update \
+    && apt-get install -y unixodbc-dev gcc g++ make libgssapi-krb5-2
+
+# Install SQLSRV and PDO_SQLSRV extensions
+RUN pecl install sqlsrv pdo_sqlsrv \
     && echo "extension=sqlsrv.so" > /etc/php/8.4/mods-available/sqlsrv.ini \
     && echo "extension=pdo_sqlsrv.so" > /etc/php/8.4/mods-available/pdo_sqlsrv.ini \
     && phpenmod sqlsrv pdo_sqlsrv
@@ -86,9 +87,7 @@ RUN chmod +x /usr/local/bin/start-container
 
 EXPOSE 80/tcp
 
-ENTRYPOINT ["start-container"]
-
-`
+ENTRYPOINT ["start-container"]`
 
 run  `docker-compose build --no-cache && docker-compose up -d`
 
