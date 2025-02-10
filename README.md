@@ -1,17 +1,39 @@
-[# docker-sail-with-mssql-pdo-sqlsrv
-Docker Sail with MSSQL 
-](https://laravel.com/docs/11.x/sail
+# Docker Sail with MSSQL and PDO_SQLSRV
 
-`composer require laravel/sail --dev`
+This guide walks you through setting up a Laravel environment using Docker Sail with MSSQL support via `sqlsrv` and `pdo_sqlsrv` PHP extensions.
 
-`composer require laravel/sail --dev`
+## Prerequisites
 
-`sail artisan sail:publish`
+- [Docker](https://docs.docker.com/get-docker/)
+- [Composer](https://getcomposer.org/)
 
-Go to the directory docker/8.4 and open Dockerfile
-remove the code and add
+## Setting Up Laravel with Sail
 
-`FROM ubuntu:24.04
+1. **Create a new Laravel project:**
+
+   ```bash
+   composer create-project laravel/laravel example-app
+   cd example-app
+   ```
+
+2. **Require Laravel Sail:**
+
+   ```bash
+   composer require laravel/sail --dev
+   ```
+
+3. **Publish Sail’s Docker configuration:**
+
+   ```bash
+   php artisan sail:publish
+   ```
+
+## Configuring Docker for MSSQL Support
+
+Navigate to the `docker/8.4` directory and open the `Dockerfile`. Replace its contents with the following:
+
+```Dockerfile
+FROM ubuntu:24.04
 
 LABEL maintainer="Taylor Otwell"
 
@@ -87,8 +109,21 @@ RUN chmod +x /usr/local/bin/start-container
 
 EXPOSE 80/tcp
 
-ENTRYPOINT ["start-container"]`
+ENTRYPOINT ["start-container"]
+```
 
-run  `docker-compose build --no-cache && docker-compose up -d`
+## Running the Docker Environment
 
-)
+To build and run the Docker containers, execute the following commands:
+
+```bash
+docker-compose build --no-cache
+sail up -d
+```
+
+## Additional Resources
+
+- [Laravel Sail Documentation](https://laravel.com/docs/11.x/sail)
+
+You're all set! 🎉 Your Laravel environment is now configured to use MSSQL with `pdo_sqlsrv` support.
+
