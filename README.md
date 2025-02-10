@@ -1,6 +1,6 @@
 # Docker Sail with MSSQL and PDO_SQLSRV
 
-This guide walks you through setting up a Laravel environment using Docker Sail with MSSQL support via `sqlsrv` and `pdo_sqlsrv` PHP extensions.
+This guide walks you through setting up a Laravel environment using Docker Sail with MSSQL support via `sqlsrv` and `pdo_sqlsrv` PHP 8.4 extensions.
 
 ## Prerequisites
 
