@@ -125,5 +125,3 @@ sail up -d
 
 - [Laravel Sail Documentation](https://laravel.com/docs/11.x/sail)
 
-You're all set! 🎉 Your Laravel environment is now configured to use MSSQL with `pdo_sqlsrv` support.
-
